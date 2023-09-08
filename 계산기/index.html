@@ -80,12 +80,43 @@
 
     //고차함수를 사용하지 않고도 중복을 줄일 수 잇다.
     const onClickNumber = (e) => {
-      if (operator) {
-        numTwo += e.target.textContent;
-      } else {
+      if (!operator) {
         numOne += e.target.textContent;
+        $result.value += e.target.textContent;
+        return;
       }
+      if (!numTwo) {
+        $result.value = '';
+      }
+      numTwo += e.target.textContent;
       $result.value += e.target.textContent;
+    }
+
+    const onClickCalc = (e) => {
+      if (numTwo) {
+        switch (operator) {
+          case "+":
+            $result.value = parseInt(numOne) + parseInt(numTwo);
+            break;
+          case "-":
+            $result.value = parseInt(numOne) - parseInt(numTwo);
+            break;
+          case "/":
+            $result.value = parseInt(numOne) / parseInt(numTwo);
+            break;
+          case "*":
+            $result.value = parseInt(numOne) * parseInt(numTwo);
+            break;
+          default:
+            break;
+        }
+        $operator.value = ''; // 사칙연산 칸을 비워준다.
+        numOne = $result.value; //처음 계산한 값을 numOne에 할당한다.
+        numTwo = ''; //두번째 값을 비워준다.
+        operator = ''; //사칙연산 칸을 비워준다.
+      } else {
+        alert('숫자를 먼저 입력하세요')
+      }
     }
 
     document.querySelector('#num-0').addEventListener('click', onClickNumber)
@@ -112,8 +143,14 @@
     document.querySelector('#minus').addEventListener('click', onClickOperator('-'))
     document.querySelector('#divide').addEventListener('click', onClickOperator('/'))
     document.querySelector('#multiply').addEventListener('click', onClickOperator('*'))
-    document.querySelector('#calculate').addEventListener('click', () => { })
-    document.querySelector('#clear').addEventListener('click', () => { })
+    document.querySelector('#calculate').addEventListener('click', onClickCalc)
+    document.querySelector('#clear').addEventListener('click', () => {
+      numOne = '';
+      numTwo = '';
+      operator = '';
+      $result.value = '';
+      $operator.value = '';
+    })
 
   </script>
 </body>
