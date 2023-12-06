@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <style>
+    #hand {
+      width: 142px;
+      height: 200px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hand"></div>
+  <div>
+    <button id="scissors" class="btn">가위</button>
+    <button id="rock" class="btn">바위</button>
+    <button id="paper" class="btn">보</button>
+  </div>
+  <div id="score">0</div>
+
+  <script>
+    const $hand = document.querySelector("#hand");
+    const $score = document.querySelector("#score");
+    const $scissors = document.querySelector("#scissors");
+    const $rock = document.querySelector("#rock");
+    const $paper = document.querySelector("#paper");
+    const IMG_URL = "./rsp.png";
+    $hand.style.background = `url(${IMG_URL}) 0 0`;
+    $hand.style.backgroundSize = 'auto 200px';
+
+    const packageX = {
+      scissors: "0",
+      rock: "-220px",
+      paper: "-440px"
+    }
+
+    /**
+     * 가위바위보 공통부 함수 적용
+    */
+    // function commonfn (url, imgPosition) {
+    //   $hand.style.background = `url(${url}) ${imgPosition} 0`;
+    //   $hand.style.backgroundSize = 'auto 200px';
+    // }
+
+
+    let computer = 'scissors';
+    const computerHands = () => {
+      if (computer === 'scissors') { //가위일때
+        computer = 'rock'; //데이터 위치 변경(바위)
+      } else if (computer === 'rock') { //바위일때
+        computer = 'paper';
+      } else if (computer === 'paper') { //보
+        computer = 'scissors';
+      }
+      $hand.style.background = `url(${IMG_URL}) ${packageX[computer]} 0`;
+      $hand.style.backgroundSize = 'auto 200px';
+    }
+
+    //방법1. 자바스크립트 이벤트리스너 제거하는 방법
+    // let intervalId = setInterval(computerHands, 100);
+    // const clickBtn = () => {
+    //   clearInterval(intervalId); //클릭하고 나서 해제
+    //   $rock.removeEventListener("click", clickBtn);
+    //   $scissors.removeEventListener("click", clickBtn);
+    //   $paper.removeEventListener("click", clickBtn);
+    //   setTimeout(() => {
+    //     intervalId = setInterval(computerHands, 100);
+    //     $rock.addEventListener("click", clickBtn);
+    //     $scissors.addEventListener("click", clickBtn);
+    //     $paper.addEventListener("click", clickBtn);
+    //   }, 300)
+    // }
+
+    // $rock.addEventListener("click", clickBtn);
+    // $scissors.addEventListener("click", clickBtn);
+    // $paper.addEventListener("click", clickBtn);
+
+
+    //방법2. boolean 값을 통해 if문으로 제어
+    let intervalId = setInterval(computerHands, 80);
+    const scoreTable = {
+      rock: 0,
+      scissors: 1,
+      paper: -1,
+    }
+    let clickable = true;
+    let score = 0;
+    const clickBtn = (e) => {
+      if (clickable) {
+        clearInterval(intervalId);
+        clickable = false;
+        const myChoice = e.target.textContent === '가위' ? 'scissors' : e.target.textContent === '바위' ? 'rock' : 'paper';
+        console.log(myChoice)
+
+        const myScore = scoreTable[myChoice]; //scoreTable 객체의 키값이 문자열이라서
+        const computerScore = scoreTable[computer];
+        console.log(myScore, computerScore)
+        const diff = myScore - computerScore;
+        //무승부 0, 이기면 2 또는 -1, 지면 1 또는 -2
+        // if (diff === 2 || diff === -1) { //이겼을 경우
+        //   $score.textContent = '이겼습니다.'
+        // } else if (diff === 0) {
+        //   $score.textContent = '무승부입니다.'
+        // } else if (diff === 1 || diff === -2) {
+        //   $score.textContent = '졌습니다.'
+        // }
+        let msg;
+
+        if ([2, -1].includes(diff)) {
+          score += 1;
+          msg = '승리';
+        } else if ([1, -2].includes(diff)) {
+          score -= -1;
+          msg = '패배';
+        } else if ([0].includes(diff)) {
+          msg = '무승부';
+        }
+
+        $score.textContent = `${msg} 총점: ${score}`;
+
+        setTimeout(() => {
+          clickable = true;
+          intervalId = setInterval(computerHands, 80);
+        }, 1000);
+      }
+    }
+    $rock.addEventListener("click", clickBtn);
+    $scissors.addEventListener("click", clickBtn);
+    $paper.addEventListener("click", clickBtn);
+  </script>
+</body>
+
+</html>
