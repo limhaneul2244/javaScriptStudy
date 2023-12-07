@@ -66,20 +66,22 @@
         endTime = new Date();
         const current = endTime - startTime;
         records.push(current);//계산한 시간차를 배열에 넣는다.
-        // let average = records.reduce((a, c) => a + c) / records.length;
+        let average = records.reduce((a, c) => a + c) / records.length;
         let sorting = records.sort((a, b) => (a - b)).slice(0, 5);
-        console.log(records, sorting)
-        // const r = average.sort((a, b) => a - b);
-        $result.textContent = `현재: ${current}ms,
-        속도순 정렬(상위 5개): ${sorting}
-        `;
-        // 평균: ${average}ms
+        $result.textContent = `현재: ${current}ms, 평균: ${average}ms`;
+        sorting.forEach((elem, index) => {
+          $result.append(
+            document.createElement('br'),
+            `${index + 1}위 ${elem}ms`
+          )
+        })
 
         //기존 값 초기화
         startTime = null;
         endTime = null;
         $screen.classList.remove('now');
         $screen.classList.add('waiting');
+
         $screen.textContent = '클릭해서 시작하세요';
       }
     })
