@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>반응속도테스트</title>
+  <style>
+    #screen {
+      width: 300px;
+      height: 300px;
+      text-align: center;
+    }
+
+    /* 대기 */
+    #screen.waiting {
+      background-color: blue;
+      color: white;
+    }
+
+    #screen.ready {
+      background-color: red;
+      color: white;
+    }
+
+    /* 시작 */
+    #screen.now {
+      background-color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="screen" class="waiting">클릭해서 시작하세요</div>
+  <div id="result"></div>
+
+  <script>
+    const $screen = document.querySelector('#screen');
+    const $result = document.querySelector('#result');
+
+    let startTime;
+    let endTime;
+    let timeOutId;
+    const records = [];
+    $screen.addEventListener('click', (e) => {
+      if (e.target.classList.contains('waiting')) {
+        $screen.classList.remove('waiting');
+        $screen.classList.add('ready');
+        $screen.textContent = '초록색이 되면 클릭하세요';
+        //첫 시간 재기
+        timeOutId = setTimeout(() => {
+          startTime = new Date();
+          $screen.classList.remove('ready');
+          $screen.classList.add('now');
+          $screen.textContent = '클릭하세요';
+          //2~3초 사이의 랜덤숫자
+        }, Math.floor(Math.random() * 1000) + 2000);
+      } else if (e.target.classList.contains('ready')) { //빨강 클릭시 성급하다라는 메시지로 변경
+        clearTimeout(timeOutId); //중요! setTimeout 제거
+        $screen.classList.remove('ready');
+        $screen.classList.add('waiting');
+        $screen.textContent = '부정클릭';
+      } else if (e.target.classList.contains('now')) { //시작(초록)
+        //종료 시간 재기
+        endTime = new Date();
+        const current = endTime - startTime;
+        records.push(current);//계산한 시간차를 배열에 넣는다.
+        // let average = records.reduce((a, c) => a + c) / records.length;
+        let sorting = records.sort((a, b) => (a - b)).slice(0, 5);
+        console.log(records, sorting)
+        // const r = average.sort((a, b) => a - b);
+        $result.textContent = `현재: ${current}ms,
+        속도순 정렬(상위 5개): ${sorting}
+        `;
+        // 평균: ${average}ms
+
+        //기존 값 초기화
+        startTime = null;
+        endTime = null;
+        $screen.classList.remove('now');
+        $screen.classList.add('waiting');
+        $screen.textContent = '클릭해서 시작하세요';
+      }
+    })
+  </script>
+</body>
+
+</html>
